@@ -1,0 +1,16 @@
+{
+  "v7": {
+    "as_of_date": "2026-07-13",
+    "actual_date": "2026-07-14",
+    "rows": 50,
+    "direction_accuracy": 0.56,
+    "mae_pct": 1.7855776926656908
+  },
+  "v8": {
+    "as_of_date": "2026-07-13",
+    "actual_date": "2026-07-14",
+    "rows": 50,
+    "direction_accuracy": 0.48,
+    "mae_pct": 1.783000053105703
+  }
+}
