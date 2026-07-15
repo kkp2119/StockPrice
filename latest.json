@@ -3,14 +3,14 @@
     "as_of_date": "2026-07-14",
     "actual_date": "2026-07-15",
     "rows": 50,
-    "direction_accuracy": 0.6,
-    "mae_pct": 1.6307387409261451
+    "direction_accuracy": 0.48,
+    "mae_pct": 1.4901253971439894
   },
   "v8": {
     "as_of_date": "2026-07-14",
     "actual_date": "2026-07-15",
     "rows": 50,
-    "direction_accuracy": 0.66,
-    "mae_pct": 1.6696675875087348
+    "direction_accuracy": 0.52,
+    "mae_pct": 1.4215429269412447
   }
 }
