@@ -341,6 +341,36 @@
 			line-height: 1.6;
 		}
 
+		.m7-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+			gap: 14px;
+		}
+
+		.m7-card {
+			padding: 14px 16px;
+			background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+			border: 1px solid var(--line);
+			border-radius: 18px;
+		}
+
+		.m7-card h3 {
+			margin: 0 0 2px;
+			font-family: "Space Grotesk", sans-serif;
+			font-size: 16px;
+			letter-spacing: -0.01em;
+		}
+
+		.m7-card .m7-sub {
+			margin: 0 0 10px;
+			color: var(--muted);
+			font-size: 12px;
+		}
+
+		.m7-card .chart-stage {
+			min-height: 160px;
+		}
+
 		.table-card {
 			padding: 18px;
 		}
@@ -504,6 +534,28 @@
 
 		<section class="metrics" id="metrics"></section>
 
+		<section class="metrics" id="cumMetrics"></section>
+
+		<section class="panel content-card" id="trendSection" style="margin-bottom:20px;">
+			<div class="section-head">
+				<div>
+					<h2>정확도 추이 (전체 스코어링 기간)</h2>
+					<p>v7 vs v8 방향 정확도, 점선은 그날그날의 실제 always-up 비율입니다.</p>
+				</div>
+			</div>
+			<div class="chart-stage" style="min-height:260px;"><canvas id="trendChart"></canvas></div>
+		</section>
+
+		<section class="panel content-card" id="m7Section" style="margin-bottom:20px;">
+			<div class="section-head">
+				<div>
+					<h2>M7 실제 vs 예측 주가</h2>
+					<p>v7이 예측한 다음날 종가(점선)와 실제 종가(실선)를 매그니피센트 7 종목별로 비교합니다.</p>
+				</div>
+			</div>
+			<div class="m7-grid" id="m7Grid"></div>
+		</section>
+
 		<section class="source-grid">
 			<div class="panel content-card">
 				<div class="section-head">
@@ -597,11 +649,13 @@
 			snapshots: normalizeFromAny(defaultJson),
 			currentIndex: 0,
 			rawText: JSON.stringify(defaultJson, null, 2),
-			sourceLabel: "Embedded sample from latest.json"
+			sourceLabel: "Embedded sample from latest.json",
+			rawParsed: null
 		};
 
 		const els = {
 			metrics: document.getElementById("metrics"),
+			cumMetrics: document.getElementById("cumMetrics"),
 			dateSelect: document.getElementById("dateSelect"),
 			historyList: document.getElementById("historyList"),
 			resultsTable: document.getElementById("resultsTable"),
@@ -612,10 +666,17 @@
 			loadLatestJson: document.getElementById("loadLatestJson"),
 			loadLatestMd: document.getElementById("loadLatestMd"),
 			loadFromUrl: document.getElementById("loadFromUrl"),
-			sourceUrl: document.getElementById("sourceUrl")
+			sourceUrl: document.getElementById("sourceUrl"),
+			m7Grid: document.getElementById("m7Grid")
 		};
 
 		let versionChart;
+		let trendChart;
+		const m7Charts = {};
+		const VERSION_COLORS = {
+			v7: { line: "rgba(122, 227, 207, 1)", fill: "rgba(122, 227, 207, 0.12)" },
+			v8: { line: "rgba(255, 209, 102, 1)", fill: "rgba(255, 209, 102, 0.12)" }
+		};
 
 		function normalizeFromAny(input) {
 			if (Array.isArray(input)) {
@@ -664,7 +725,10 @@
 					direction_accuracy: Number(entry.direction_accuracy ?? entry.accuracy ?? 0),
 					mae_pct: Number(entry.mae_pct ?? entry.mae ?? 0),
 					correct: Number(entry.correct ?? Math.round(Number(entry.direction_accuracy ?? entry.accuracy ?? 0) * Number(entry.rows || value.rows || 0))),
-					total: Number(entry.total ?? entry.rows ?? value.rows ?? 0)
+					total: Number(entry.total ?? entry.rows ?? value.rows ?? 0),
+					correlation: entry.correlation ?? null,
+					always_up_rate: entry.always_up_rate ?? null,
+					beats_baseline: entry.beats_baseline ?? null
 				}));
 
 			const actual_date = versions[0]?.actual_date || value.actual_date || value.date || "";
@@ -754,14 +818,15 @@
 			}
 
 			if (/\.md$/i.test(fileName) || trimmed.startsWith("#")) {
-				return { snapshots: parseMarkdown(trimmed), rawText: text, sourceLabel: fileName || "Markdown" };
+				return { snapshots: parseMarkdown(trimmed), rawText: text, sourceLabel: fileName || "Markdown", rawParsed: null };
 			}
 
 			const parsed = JSON.parse(trimmed);
 			return {
 				snapshots: normalizeFromAny(parsed),
 				rawText: JSON.stringify(parsed, null, 2),
-				sourceLabel: fileName || "JSON"
+				sourceLabel: fileName || "JSON",
+				rawParsed: parsed
 			};
 		}
 
@@ -1000,14 +1065,215 @@
 			els.rawPreview.value = state.rawText;
 		}
 
+		function renderCumulativeMetrics() {
+			const v7c = state.rawParsed && state.rawParsed.v7_cumulative;
+			const v8c = state.rawParsed && state.rawParsed.v8_cumulative;
+			if (!v7c && !v8c) {
+				els.cumMetrics.innerHTML = "";
+				return;
+			}
+
+			const cards = [];
+			[["v7", v7c], ["v8", v8c]].forEach(([tag, cum]) => {
+				if (!cum) return;
+				cards.push({
+					label: `${tag} · cumulative accuracy`,
+					value: toPercent(cum.pooled_accuracy, 1),
+					sub: `${cum.total_hits}/${cum.total_rows} correct over ${cum.days_scored} day(s), ${cum.first_actual_date} → ${cum.last_actual_date}`
+				});
+				cards.push({
+					label: `${tag} · beat that day's always-up rate`,
+					value: `${cum.days_beating_baseline}/${cum.days_with_baseline}`,
+					sub: `days where ${tag} direction accuracy beat that day's own realized up-rate`
+				});
+			});
+
+			els.cumMetrics.innerHTML = cards.map((card) => `
+				<article class="metric">
+					<div class="label">${card.label}</div>
+					<div class="value">${card.value}</div>
+					<div class="sub">${card.sub}</div>
+				</article>
+			`).join("");
+		}
+
+		function createOrUpdateTrendChart() {
+			const snapshots = state.snapshots;
+			const ctx = document.getElementById("trendChart");
+			if (!snapshots.length) {
+				if (trendChart) { trendChart.destroy(); trendChart = null; }
+				return;
+			}
+
+			const labels = snapshots.map((snap) => snap.actual_date || "?");
+			const byVersion = (version) => snapshots.map((snap) => {
+				const entry = (snap.versions || []).find((v) => v.version === version);
+				return entry ? Number(entry.direction_accuracy || 0) * 100 : null;
+			});
+			const baselineSeries = snapshots.map((snap) => {
+				const withBaseline = (snap.versions || []).find((v) => v.always_up_rate != null);
+				return withBaseline ? Number(withBaseline.always_up_rate) * 100 : null;
+			});
+
+			const config = {
+				type: "line",
+				data: {
+					labels,
+					datasets: [
+						{
+							label: "v7 accuracy (%)",
+							data: byVersion("v7"),
+							borderColor: VERSION_COLORS.v7.line,
+							backgroundColor: VERSION_COLORS.v7.fill,
+							tension: 0.25,
+							spanGaps: true,
+							pointRadius: 4
+						},
+						{
+							label: "v8 accuracy (%)",
+							data: byVersion("v8"),
+							borderColor: VERSION_COLORS.v8.line,
+							backgroundColor: VERSION_COLORS.v8.fill,
+							tension: 0.25,
+							spanGaps: true,
+							pointRadius: 4
+						},
+						{
+							label: "Day's always-up rate (%)",
+							data: baselineSeries,
+							borderColor: "rgba(159, 176, 201, 0.85)",
+							borderDash: [6, 4],
+							pointRadius: 0,
+							fill: false,
+							spanGaps: true
+						}
+					]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					animation: { duration: 700, easing: "easeOutQuart" },
+					plugins: {
+						legend: { labels: { color: "#dfe8f8", font: { family: "IBM Plex Sans" } } },
+						tooltip: {
+							backgroundColor: "rgba(8, 14, 24, 0.95)",
+							titleColor: "#fff",
+							bodyColor: "#dfe8f8",
+							borderColor: "rgba(255,255,255,0.08)",
+							borderWidth: 1
+						}
+					},
+					scales: {
+						x: { ticks: { color: "#9fb0c9" }, grid: { color: "rgba(255,255,255,0.05)" } },
+						y: {
+							ticks: { color: "#9fb0c9", callback: (v) => `${v}%` },
+							grid: { color: "rgba(255,255,255,0.05)" }
+						}
+					}
+				}
+			};
+
+			if (trendChart) {
+				trendChart.data = config.data;
+				trendChart.options = config.options;
+				trendChart.update();
+			} else {
+				trendChart = new Chart(ctx, config);
+			}
+		}
+
+		function renderM7Grid() {
+			const series = state.rawParsed && state.rawParsed.m7_price_series;
+			if (!series || !Object.keys(series).length) {
+				els.m7Grid.innerHTML = `<div class="history-item"><strong>데이터 없음</strong><span>latest.json에 m7_price_series가 없습니다.</span></div>`;
+				return;
+			}
+
+			const tickers = Object.keys(series).filter((t) => series[t] && series[t].length);
+			if (!tickers.length) {
+				els.m7Grid.innerHTML = `<div class="history-item"><strong>아직 데이터 없음</strong><span>스코어링된 날짜가 쌓이면 여기에 표시됩니다.</span></div>`;
+				return;
+			}
+
+			els.m7Grid.innerHTML = tickers.map((ticker) => {
+				const latest = series[ticker][series[ticker].length - 1];
+				const hitLabel = latest.direction_correct ? '<span class="pill">최근일 적중</span>' : '<span class="pill bad">최근일 오답</span>';
+				return `
+					<div class="m7-card">
+						<h3>${ticker} ${hitLabel}</h3>
+						<p class="m7-sub">최근 종가 $${latest.actual_close.toFixed(2)} · 예측 종가 $${latest.predicted_close.toFixed(2)}</p>
+						<div class="chart-stage"><canvas id="m7-${ticker}"></canvas></div>
+					</div>
+				`;
+			}).join("");
+
+			tickers.forEach((ticker) => {
+				const points = series[ticker];
+				const ctx = document.getElementById(`m7-${ticker}`);
+				const config = {
+					type: "line",
+					data: {
+						labels: points.map((p) => p.date),
+						datasets: [
+							{
+								label: "실제 종가",
+								data: points.map((p) => p.actual_close),
+								borderColor: "rgba(142, 197, 255, 1)",
+								backgroundColor: "rgba(142, 197, 255, 0.10)",
+								tension: 0.2,
+								pointRadius: 3
+							},
+							{
+								label: "예측 종가",
+								data: points.map((p) => p.predicted_close),
+								borderColor: "rgba(255, 209, 102, 1)",
+								borderDash: [5, 4],
+								backgroundColor: "rgba(255, 209, 102, 0.08)",
+								tension: 0.2,
+								pointRadius: 3
+							}
+						]
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						animation: { duration: 500 },
+						plugins: {
+							legend: { labels: { color: "#dfe8f8", font: { size: 11, family: "IBM Plex Sans" } } },
+							tooltip: {
+								backgroundColor: "rgba(8, 14, 24, 0.95)",
+								titleColor: "#fff",
+								bodyColor: "#dfe8f8"
+							}
+						},
+						scales: {
+							x: { ticks: { color: "#9fb0c9", font: { size: 10 } }, grid: { display: false } },
+							y: { ticks: { color: "#9fb0c9", font: { size: 10 } }, grid: { color: "rgba(255,255,255,0.05)" } }
+						}
+					}
+				};
+
+				if (m7Charts[ticker]) {
+					m7Charts[ticker].data = config.data;
+					m7Charts[ticker].options = config.options;
+					m7Charts[ticker].update();
+				} else {
+					m7Charts[ticker] = new Chart(ctx, config);
+				}
+			});
+		}
+
 		function renderAll() {
 			const snapshot = currentSnapshot();
 			document.title = `${snapshot.actual_date || "Results"} · StockFlow Results Explorer`;
 			renderDateOptions();
 			renderMetrics(snapshot);
+			renderCumulativeMetrics();
 			renderHistoryList();
 			renderTable(snapshot);
 			createOrUpdateChart(snapshot);
+			createOrUpdateTrendChart();
+			renderM7Grid();
 			renderSourceInfo();
 		}
 
@@ -1017,9 +1283,10 @@
 			}
 
 			state.snapshots = nextState.snapshots;
-			state.currentIndex = 0;
+			state.currentIndex = nextState.snapshots.length - 1; // default to the latest scored day
 			state.rawText = nextState.rawText;
 			state.sourceLabel = nextState.sourceLabel;
+			state.rawParsed = nextState.rawParsed || null;
 			localStorage.setItem("stockflow_results_state", JSON.stringify({
 				rawText: nextState.rawText,
 				sourceLabel: nextState.sourceLabel
