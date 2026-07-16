@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>StockFlow — 내일 예측 카드</title>
+	<meta name="description" content="v7 모델의 다음 거래일 상승/하락 예측을 종목별 카드로 보는 페이지">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			color-scheme: dark;
+			--bg: #07111f;
+			--panel: rgba(11, 19, 35, 0.78);
+			--line: rgba(255, 255, 255, 0.08);
+			--text: #eef4ff;
+			--muted: #9fb0c9;
+			--accent: #7ae3cf;
+			--accent-2: #ffd166;
+			--danger: #ff8f7a;
+			--shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+			--radius: 24px;
+		}
+
+		* { box-sizing: border-box; }
+		html, body { min-height: 100%; }
+
+		body {
+			margin: 0;
+			font-family: "IBM Plex Sans", sans-serif;
+			background:
+				radial-gradient(circle at 12% 10%, rgba(122, 227, 207, 0.18), transparent 24%),
+				radial-gradient(circle at 86% 12%, rgba(255, 209, 102, 0.12), transparent 20%),
+				linear-gradient(180deg, #09111d 0%, #07111f 52%, #060b14 100%);
+			color: var(--text);
+		}
+
+		.shell {
+			max-width: 1480px;
+			margin: 0 auto;
+			padding: 28px;
+		}
+
+		.panel {
+			background: linear-gradient(180deg, rgba(20, 31, 54, 0.84), rgba(10, 18, 33, 0.92));
+			border: 1px solid var(--line);
+			border-radius: var(--radius);
+			box-shadow: var(--shadow);
+			backdrop-filter: blur(18px);
+			-webkit-backdrop-filter: blur(18px);
+		}
+
+		.top-bar {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			flex-wrap: wrap;
+			padding: 22px 28px;
+			margin-bottom: 20px;
+		}
+
+		.back-link {
+			color: var(--muted);
+			text-decoration: none;
+			font-size: 13px;
+			font-weight: 600;
+		}
+
+		.back-link:hover { color: var(--text); }
+
+		h1 {
+			margin: 6px 0 4px;
+			font-family: "Space Grotesk", sans-serif;
+			font-size: clamp(26px, 3.4vw, 36px);
+			letter-spacing: -0.03em;
+		}
+
+		#sub {
+			margin: 0;
+			color: var(--muted);
+			font-size: 13px;
+			line-height: 1.6;
+			max-width: 70ch;
+		}
+
+		.toolbar {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 10px;
+			padding: 0 28px 20px;
+		}
+
+		select, input[type="text"] {
+			border: 1px solid rgba(255,255,255,0.10);
+			background: rgba(4, 10, 20, 0.55);
+			color: var(--text);
+			border-radius: 14px;
+			padding: 10px 14px;
+			font: inherit;
+			outline: none;
+			min-width: 170px;
+		}
+
+		select:focus, input:focus {
+			border-color: rgba(122, 227, 207, 0.75);
+			box-shadow: 0 0 0 4px rgba(122, 227, 207, 0.12);
+		}
+
+		.up-down-summary {
+			font-size: 13px;
+			color: var(--muted);
+		}
+
+		.up-down-summary strong.up { color: var(--accent); }
+		.up-down-summary strong.down { color: var(--danger); }
+
+		.pick-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+			gap: 12px;
+			padding: 0 28px 28px;
+		}
+
+		.pick-card {
+			padding: 14px 16px;
+			background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+			border: 1px solid var(--line);
+			border-radius: 18px;
+		}
+
+		.pick-card.up { border-color: rgba(122, 227, 207, 0.4); }
+		.pick-card.down { border-color: rgba(255, 143, 122, 0.4); }
+
+		.pick-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 6px;
+			margin-bottom: 6px;
+		}
+
+		.pick-ticker {
+			font-family: "Space Grotesk", sans-serif;
+			font-size: 18px;
+			letter-spacing: -0.01em;
+		}
+
+		.pick-pct {
+			font-family: "Space Grotesk", sans-serif;
+			font-size: 16px;
+			font-weight: 700;
+		}
+
+		.pick-card.up .pick-pct { color: var(--accent); }
+		.pick-card.down .pick-pct { color: var(--danger); }
+
+		.pick-sector {
+			margin: 0 0 10px;
+			color: var(--muted);
+			font-size: 11px;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+		}
+
+		.pick-price {
+			display: flex;
+			justify-content: space-between;
+			font-size: 12.5px;
+			color: var(--muted);
+		}
+
+		.pick-price strong {
+			color: var(--text);
+			font-weight: 600;
+		}
+
+		.empty-state {
+			margin: 0 28px 28px;
+			padding: 24px;
+			border: 1px dashed var(--line);
+			border-radius: 18px;
+			color: var(--muted);
+			font-size: 14px;
+		}
+
+		@media (max-width: 680px) {
+			.shell { padding: 14px; }
+			.top-bar, .toolbar, .pick-grid, .empty-state { padding-left: 16px; padding-right: 16px; }
+		}
+	</style>
+</head>
+<body>
+	<div class="shell">
+		<section class="panel top-bar">
+			<div>
+				<a class="back-link" href="index.html">&larr; 대시보드로 돌아가기</a>
+				<h1 id="title">내일 예측 카드</h1>
+				<p id="sub">불러오는 중…</p>
+			</div>
+			<div class="up-down-summary" id="upDownSummary"></div>
+		</section>
+
+		<section class="panel" style="margin-bottom:20px;">
+			<div class="toolbar">
+				<select id="sortSelect" aria-label="정렬 기준">
+					<option value="pct-desc">예측 등락률 높은 순</option>
+					<option value="pct-asc">예측 등락률 낮은 순</option>
+					<option value="ticker">티커 이름순</option>
+				</select>
+				<input id="filterInput" type="text" placeholder="티커 검색 (예: AAPL)">
+			</div>
+			<div class="pick-grid" id="pickGrid"></div>
+			<div class="empty-state" id="emptyState" style="display:none;"></div>
+		</section>
+	</div>
+
+	<script>
+		const els = {
+			title: document.getElementById("title"),
+			sub: document.getElementById("sub"),
+			upDownSummary: document.getElementById("upDownSummary"),
+			pickGrid: document.getElementById("pickGrid"),
+			emptyState: document.getElementById("emptyState"),
+			sortSelect: document.getElementById("sortSelect"),
+			filterInput: document.getElementById("filterInput")
+		};
+
+		const ui = { sort: "pct-desc", filter: "" };
+		let latestPayload = null;
+
+		function render() {
+			const npd = latestPayload && latestPayload.next_day_predictions;
+			if (!npd || !npd.cards || !npd.cards.length) {
+				els.pickGrid.innerHTML = "";
+				els.emptyState.style.display = "block";
+				els.emptyState.textContent = "latest.json에 next_day_predictions가 없습니다. 아직 파이프라인이 한 번도 안 돌았거나 로드에 실패했을 수 있어요.";
+				els.sub.textContent = "데이터 없음";
+				els.upDownSummary.textContent = "";
+				return;
+			}
+
+			els.emptyState.style.display = "none";
+			const genDate = npd.generated_at ? new Date(npd.generated_at) : null;
+			els.title.textContent = `내일 예측 카드 (${npd.cards.length}종목)`;
+			els.sub.textContent = `${npd.as_of_date} 종가 기준, 아직 채점되지 않은 v7의 다음 거래일 예측입니다.` +
+				(genDate ? ` 생성 시각 ${genDate.toLocaleString("ko-KR")}.` : "") +
+				` 6시간마다 도는 파이프라인이 자동으로 갱신해요.`;
+
+			const upCount = npd.cards.filter((c) => c.direction === "UP").length;
+			const downCount = npd.cards.length - upCount;
+			els.upDownSummary.innerHTML = `<strong class="up">▲ ${upCount}</strong> UP · <strong class="down">▼ ${downCount}</strong> DOWN`;
+
+			const query = ui.filter.trim().toUpperCase();
+			let cards = npd.cards.filter((c) => !query || c.ticker.toUpperCase().includes(query));
+
+			if (ui.sort === "pct-desc") cards = [...cards].sort((a, b) => b.pred_return_pct - a.pred_return_pct);
+			else if (ui.sort === "pct-asc") cards = [...cards].sort((a, b) => a.pred_return_pct - b.pred_return_pct);
+			else cards = [...cards].sort((a, b) => a.ticker.localeCompare(b.ticker));
+
+			if (!cards.length) {
+				els.pickGrid.innerHTML = "";
+				els.emptyState.style.display = "block";
+				els.emptyState.textContent = `"${query}"에 해당하는 종목이 없습니다.`;
+				return;
+			}
+
+			els.pickGrid.innerHTML = cards.map((c) => {
+				const isUp = c.direction === "UP";
+				const sign = c.pred_return_pct >= 0 ? "+" : "";
+				return `
+					<div class="pick-card ${isUp ? "up" : "down"}">
+						<div class="pick-head">
+							<span class="pick-ticker">${c.ticker}</span>
+							<span class="pick-pct">${isUp ? "▲" : "▼"} ${sign}${c.pred_return_pct.toFixed(2)}%</span>
+						</div>
+						<p class="pick-sector">${c.sector}</p>
+						<div class="pick-price">
+							<span>현재 $${c.close_used.toFixed(2)}</span>
+							<strong>예측 $${c.pred_next_close.toFixed(2)}</strong>
+						</div>
+					</div>
+				`;
+			}).join("");
+		}
+
+		async function loadLatest() {
+			try {
+				const response = await fetch("../latest.json", { cache: "no-store" });
+				if (!response.ok) throw new Error(`HTTP ${response.status}`);
+				latestPayload = await response.json();
+				render();
+			} catch (error) {
+				els.sub.textContent = `자동 불러오기 실패: ${error.message}`;
+				els.emptyState.style.display = "block";
+				els.emptyState.textContent = "../latest.json을 불러오지 못했습니다.";
+			}
+		}
+
+		els.sortSelect.addEventListener("change", () => {
+			ui.sort = els.sortSelect.value;
+			render();
+		});
+
+		els.filterInput.addEventListener("input", () => {
+			ui.filter = els.filterInput.value;
+			render();
+		});
+
+		loadLatest();
+	</script>
+</body>
+</html>
