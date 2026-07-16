@@ -21,10 +21,10 @@
   },
   "v7_cumulative": {
     "days_scored": 3,
-    "total_hits": 74,
+    "total_hits": 71,
     "total_rows": 150,
-    "pooled_accuracy": 0.49333333333333335,
-    "mean_daily_accuracy": 0.49333333333333335,
+    "pooled_accuracy": 0.47333333333333333,
+    "mean_daily_accuracy": 0.47333333333333333,
     "days_beating_baseline": 1,
     "days_with_baseline": 3,
     "first_actual_date": "2026-07-13",
@@ -71,9 +71,9 @@
         "as_of_date": "2026-07-13",
         "actual_date": "2026-07-14",
         "rows": 50,
-        "direction_accuracy": 0.56,
-        "mae_pct": 1.7855776926656908,
-        "correlation": 0.1754039485901923,
+        "direction_accuracy": 0.5,
+        "mae_pct": 1.7288462234440212,
+        "correlation": -0.0275147330638261,
         "always_up_rate": 0.46,
         "beats_baseline": true
       },
@@ -212,13 +212,6 @@
         "actual_close": 656.72998046875,
         "predicted_close": 673.3359866926445,
         "direction_correct": false
-      },
-      {
-        "date": "2026-07-15",
-        "prev_close": 661.0399780273438,
-        "actual_close": 681.3099975585938,
-        "predicted_close": 664.3011486197086,
-        "direction_correct": true
       },
       {
         "date": "2026-07-15",
