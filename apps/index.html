@@ -1371,20 +1371,32 @@
 			}
 		});
 
-		const saved = localStorage.getItem("stockflow_results_state");
-		if (saved) {
+		function loadSavedState() {
+			const saved = localStorage.getItem("stockflow_results_state");
+			if (!saved) return false;
 			try {
 				const parsed = JSON.parse(saved);
-				if (parsed.rawText) {
-					const restored = parseInput(parsed.rawText, parsed.sourceLabel || "saved-state");
-					setData(restored);
-				}
+				if (!parsed.rawText) return false;
+				const restored = parseInput(parsed.rawText, parsed.sourceLabel || "saved-state");
+				setData(restored);
+				return true;
 			} catch (error) {
 				console.warn(error);
+				return false;
 			}
 		}
 
 		renderAll();
+
+		// Auto-load the live results on first paint so charts (M7, trend, cumulative)
+		// show real data without requiring a manual button click every visit.
+		loadFromUrl("../latest.json")
+			.catch(() => {
+				// e.g. opened via file:// with no server behind it — fall back gracefully.
+				if (!loadSavedState()) {
+					notify("자동 불러오기에 실패했습니다. 위 버튼으로 직접 불러와 주세요.");
+				}
+			});
 	</script>
 </body>
 </html>
