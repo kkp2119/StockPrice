@@ -226,15 +226,15 @@
       },
       {
         "date": "2026-07-13",
-        "actual_close": 656.72998046875,
+        "actual_close": 661.0399780273438,
         "predicted_close": 673.3359866926445,
         "direction_correct": false
       },
       {
         "date": "2026-07-14",
         "actual_close": 661.0399780273438,
-        "predicted_close": null,
-        "direction_correct": null
+        "predicted_close": 664.3011486197086,
+        "direction_correct": true
       },
       {
         "date": "2026-07-15",
