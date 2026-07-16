@@ -12,5 +12,23 @@
     "rows": 50,
     "direction_accuracy": 0.52,
     "mae_pct": 1.4215429269412447
+  },
+  "v7_cumulative": {
+    "days_scored": 3,
+    "total_hits": 71,
+    "total_rows": 150,
+    "pooled_accuracy": 0.47333333333333333,
+    "mean_daily_accuracy": 0.47333333333333333,
+    "first_actual_date": "2026-07-13",
+    "last_actual_date": "2026-07-15"
+  },
+  "v8_cumulative": {
+    "days_scored": 3,
+    "total_hits": 75,
+    "total_rows": 150,
+    "pooled_accuracy": 0.5,
+    "mean_daily_accuracy": 0.5,
+    "first_actual_date": "2026-07-13",
+    "last_actual_date": "2026-07-15"
   }
 }
