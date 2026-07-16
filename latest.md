@@ -7,5 +7,5 @@
 
 ## Cumulative (all scored days so far)
 
-- **v7**: 71/150 correct (47.3%) over 3 scored day(s), 2026-07-13 → 2026-07-15
-- **v8**: 75/150 correct (50.0%) over 3 scored day(s), 2026-07-13 → 2026-07-15
+- **v7**: 74/150 correct (49.3%) over 3 scored day(s), 2026-07-13 → 2026-07-15
+- **v8**: 76/150 correct (50.7%) over 3 scored day(s), 2026-07-13 → 2026-07-15

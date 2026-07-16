@@ -15,19 +15,19 @@
   },
   "v7_cumulative": {
     "days_scored": 3,
-    "total_hits": 71,
+    "total_hits": 74,
     "total_rows": 150,
-    "pooled_accuracy": 0.47333333333333333,
-    "mean_daily_accuracy": 0.47333333333333333,
+    "pooled_accuracy": 0.49333333333333335,
+    "mean_daily_accuracy": 0.49333333333333335,
     "first_actual_date": "2026-07-13",
     "last_actual_date": "2026-07-15"
   },
   "v8_cumulative": {
     "days_scored": 3,
-    "total_hits": 75,
+    "total_hits": 76,
     "total_rows": 150,
-    "pooled_accuracy": 0.5,
-    "mean_daily_accuracy": 0.5,
+    "pooled_accuracy": 0.5066666666666667,
+    "mean_daily_accuracy": 0.5066666666666667,
     "first_actual_date": "2026-07-13",
     "last_actual_date": "2026-07-15"
   }
