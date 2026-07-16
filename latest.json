@@ -111,5 +111,168 @@
         "beats_baseline": false
       }
     }
-  ]
+  ],
+  "m7_price_series": {
+    "AAPL": [
+      {
+        "date": "2026-07-13",
+        "prev_close": 315.32000732421875,
+        "actual_close": 317.3099975585937,
+        "predicted_close": 314.117442349527,
+        "direction_correct": false
+      },
+      {
+        "date": "2026-07-14",
+        "prev_close": 317.3099975585937,
+        "actual_close": 314.8599853515625,
+        "predicted_close": 319.6086552453445,
+        "direction_correct": false
+      },
+      {
+        "date": "2026-07-15",
+        "prev_close": 314.8599853515625,
+        "actual_close": 327.5,
+        "predicted_close": 317.93720954048104,
+        "direction_correct": true
+      }
+    ],
+    "MSFT": [
+      {
+        "date": "2026-07-13",
+        "prev_close": 385.1000061035156,
+        "actual_close": 390.989990234375,
+        "predicted_close": 386.9951920357907,
+        "direction_correct": true
+      },
+      {
+        "date": "2026-07-14",
+        "prev_close": 390.989990234375,
+        "actual_close": 384.9299926757813,
+        "predicted_close": 393.7659016248516,
+        "direction_correct": false
+      },
+      {
+        "date": "2026-07-15",
+        "prev_close": 384.9299926757813,
+        "actual_close": 395.6300048828125,
+        "predicted_close": 387.3258544839725,
+        "direction_correct": true
+      }
+    ],
+    "AMZN": [
+      {
+        "date": "2026-07-13",
+        "prev_close": 245.33999633789065,
+        "actual_close": 247.30999755859372,
+        "predicted_close": 246.64681004979235,
+        "direction_correct": true
+      },
+      {
+        "date": "2026-07-14",
+        "prev_close": 247.30999755859372,
+        "actual_close": 247.4900054931641,
+        "predicted_close": 248.655446272228,
+        "direction_correct": true
+      },
+      {
+        "date": "2026-07-15",
+        "prev_close": 247.4900054931641,
+        "actual_close": 254.9600067138672,
+        "predicted_close": 248.6773179393608,
+        "direction_correct": true
+      }
+    ],
+    "GOOGL": [
+      {
+        "date": "2026-07-13",
+        "prev_close": 357.17999267578125,
+        "actual_close": 352.510009765625,
+        "predicted_close": 359.07016988583365,
+        "direction_correct": false
+      },
+      {
+        "date": "2026-07-14",
+        "prev_close": 352.510009765625,
+        "actual_close": 359.510009765625,
+        "predicted_close": 355.1498286268972,
+        "direction_correct": true
+      },
+      {
+        "date": "2026-07-15",
+        "prev_close": 359.510009765625,
+        "actual_close": 370.9200134277344,
+        "predicted_close": 361.5036315679524,
+        "direction_correct": true
+      }
+    ],
+    "META": [
+      {
+        "date": "2026-07-13",
+        "prev_close": 669.2100219726562,
+        "actual_close": 656.72998046875,
+        "predicted_close": 673.3359866926445,
+        "direction_correct": false
+      },
+      {
+        "date": "2026-07-15",
+        "prev_close": 661.0399780273438,
+        "actual_close": 681.3099975585938,
+        "predicted_close": 664.3011486197086,
+        "direction_correct": true
+      },
+      {
+        "date": "2026-07-15",
+        "prev_close": 661.0399780273438,
+        "actual_close": 681.3099975585938,
+        "predicted_close": 663.5490177804943,
+        "direction_correct": true
+      }
+    ],
+    "NVDA": [
+      {
+        "date": "2026-07-13",
+        "prev_close": 210.9600067138672,
+        "actual_close": 203.52999877929688,
+        "predicted_close": 211.7738931316713,
+        "direction_correct": false
+      },
+      {
+        "date": "2026-07-14",
+        "prev_close": 203.52999877929688,
+        "actual_close": 211.8000030517578,
+        "predicted_close": 204.6782486416017,
+        "direction_correct": true
+      },
+      {
+        "date": "2026-07-15",
+        "prev_close": 211.8000030517578,
+        "actual_close": 212.5,
+        "predicted_close": 212.90114008272803,
+        "direction_correct": true
+      }
+    ],
+    "TSLA": [
+      {
+        "date": "2026-07-13",
+        "prev_close": 407.760009765625,
+        "actual_close": 394.760009765625,
+        "predicted_close": 409.5618845394136,
+        "direction_correct": false
+      },
+      {
+        "date": "2026-07-14",
+        "prev_close": 394.760009765625,
+        "actual_close": 396.1799926757813,
+        "predicted_close": 397.5727208589661,
+        "direction_correct": true
+      },
+      {
+        "date": "2026-07-15",
+        "prev_close": 396.1799926757813,
+        "actual_close": 394.4599914550781,
+        "predicted_close": 398.5699566162064,
+        "direction_correct": false
+      }
+    ]
+  }
 }
