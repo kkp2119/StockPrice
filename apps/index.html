@@ -554,16 +554,6 @@
 			<a class="btn primary" href="predictions.html" style="text-decoration:none;">내일 예측 카드 보러가기 →</a>
 		</section>
 
-		<section class="panel content-card" id="m7Section" style="margin-bottom:20px;">
-			<div class="section-head">
-				<div>
-					<h2>M7 실제 vs 예측 주가</h2>
-					<p>v7이 예측한 다음날 종가(점선)와 실제 종가(실선)를 매그니피센트 7 종목별로 비교합니다.</p>
-				</div>
-			</div>
-			<div class="m7-grid" id="m7Grid"></div>
-		</section>
-
 		<section class="source-grid">
 			<div class="panel content-card">
 				<div class="section-head">
@@ -621,6 +611,16 @@
 				</div>
 				<p class="footer-note" id="sourceInfo"></p>
 			</div>
+		</section>
+
+		<section class="panel content-card" id="m7Section" style="margin-bottom:20px;">
+			<div class="section-head">
+				<div>
+					<h2>M7 실제 vs 예측 주가 (선택한 날짜)</h2>
+					<p>위에서 고른 날짜 하나의 전일 종가 → 당일 종가(실선)와 전일 종가 → 예측 종가(점선)를 매그니피센트 7 종목별로 비교합니다.</p>
+				</div>
+			</div>
+			<div class="m7-grid" id="m7Grid"></div>
 		</section>
 
 		<section class="panel content-card">
@@ -1190,7 +1190,7 @@
 			}
 		}
 
-		function renderM7Grid() {
+		function renderM7Grid(snapshot) {
 			const series = state.rawParsed && state.rawParsed.m7_price_series;
 			if (!series || !Object.keys(series).length) {
 				els.m7Grid.innerHTML = `<div class="history-item"><strong>데이터 없음</strong><span>latest.json에 m7_price_series가 없습니다.</span></div>`;
@@ -1203,60 +1203,83 @@
 				return;
 			}
 
-			els.m7Grid.innerHTML = tickers.map((ticker) => {
+			const selectedDate = snapshot && snapshot.actual_date;
+
+			// One entry per ticker: the point matching the globally-selected date, plus
+			// the point right before it in that ticker's own series (its "전일 종가").
+			// Keeping this to a single day — rather than the ticker's whole history —
+			// is the whole point: a multi-day line made "적중/오답" ambiguous about
+			// which day it referred to.
+			const perTicker = tickers.map((ticker) => {
 				const points = series[ticker];
-				const latest = points[points.length - 1];
-				const latestPredicted = [...points].reverse().find((p) => p.predicted_close != null);
+				const idx = points.findIndex((p) => p.date === selectedDate);
+				return {
+					ticker,
+					point: idx >= 0 ? points[idx] : null,
+					prevPoint: idx > 0 ? points[idx - 1] : null
+				};
+			});
 
-				let hitLabel;
-				if (latest.predicted_close == null) {
-					hitLabel = '<span class="pill warn">최근일 예측 없음</span>';
-				} else if (latest.direction_correct) {
-					hitLabel = '<span class="pill">최근일 적중</span>';
-				} else {
-					hitLabel = '<span class="pill bad">최근일 오답</span>';
+			els.m7Grid.innerHTML = perTicker.map(({ ticker, point, prevPoint }) => {
+				if (!point) {
+					return `
+						<div class="m7-card">
+							<h3>${ticker} <span class="pill warn">데이터 없음</span></h3>
+							<p class="m7-sub">선택한 날짜(${selectedDate || "-"})에 해당하는 기록이 없습니다.</p>
+						</div>
+					`;
 				}
-
-				const predictedNote = latestPredicted
-					? `${latestPredicted.date === latest.date ? "" : `${latestPredicted.date} 기준 · `}예측 종가 $${latestPredicted.predicted_close.toFixed(2)}`
-					: "예측 데이터 없음";
-
+				let hitLabel;
+				if (point.predicted_close == null) {
+					hitLabel = '<span class="pill warn">이 날짜 예측 없음</span>';
+				} else if (point.direction_correct) {
+					hitLabel = '<span class="pill">적중</span>';
+				} else {
+					hitLabel = '<span class="pill bad">오답</span>';
+				}
+				const startNote = prevPoint ? `${prevPoint.date} 종가 $${prevPoint.actual_close.toFixed(2)} → ` : "";
+				const predNote = point.predicted_close != null ? ` · 예측 $${point.predicted_close.toFixed(2)}` : "";
 				return `
 					<div class="m7-card">
 						<h3>${ticker} ${hitLabel}</h3>
-						<p class="m7-sub">최근 종가 $${latest.actual_close.toFixed(2)} · ${predictedNote}</p>
-						<div class="chart-stage"><canvas id="m7-${ticker}"></canvas></div>
+						<p class="m7-sub">${startNote}${point.date} 종가 $${point.actual_close.toFixed(2)}${predNote}</p>
+						${prevPoint ? `<div class="chart-stage"><canvas id="m7-${ticker}"></canvas></div>` : `<p class="m7-sub">전일 종가 기록이 없어 시작점을 그릴 수 없습니다.</p>`}
 					</div>
 				`;
 			}).join("");
 
-			tickers.forEach((ticker) => {
-				const points = series[ticker];
+			perTicker.forEach(({ ticker, point, prevPoint }) => {
 				const ctx = document.getElementById(`m7-${ticker}`);
+				if (!ctx || !point || !prevPoint) {
+					if (m7Charts[ticker]) { m7Charts[ticker].destroy(); delete m7Charts[ticker]; }
+					return;
+				}
+
+				const datasets = [
+					{
+						label: "실제 종가",
+						data: [prevPoint.actual_close, point.actual_close],
+						borderColor: "rgba(142, 197, 255, 1)",
+						backgroundColor: "rgba(142, 197, 255, 0.10)",
+						tension: 0,
+						pointRadius: 6
+					}
+				];
+				if (point.predicted_close != null) {
+					datasets.push({
+						label: "예측 종가",
+						data: [prevPoint.actual_close, point.predicted_close],
+						borderColor: "rgba(255, 209, 102, 1)",
+						borderDash: [5, 4],
+						backgroundColor: "rgba(255, 209, 102, 0.08)",
+						tension: 0,
+						pointRadius: 6
+					});
+				}
+
 				const config = {
 					type: "line",
-					data: {
-						labels: points.map((p) => p.date),
-						datasets: [
-							{
-								label: "실제 종가",
-								data: points.map((p) => p.actual_close),
-								borderColor: "rgba(142, 197, 255, 1)",
-								backgroundColor: "rgba(142, 197, 255, 0.10)",
-								tension: 0.2,
-								pointRadius: 3
-							},
-							{
-								label: "예측 종가",
-								data: points.map((p) => p.predicted_close),
-								borderColor: "rgba(255, 209, 102, 1)",
-								borderDash: [5, 4],
-								backgroundColor: "rgba(255, 209, 102, 0.08)",
-								tension: 0.2,
-								pointRadius: 3
-							}
-						]
-					},
+					data: { labels: [prevPoint.date, point.date], datasets },
 					options: {
 						responsive: true,
 						maintainAspectRatio: false,
@@ -1276,13 +1299,14 @@
 					}
 				};
 
+				// The card grid's innerHTML is fully rebuilt on every render (date
+				// switch included), so this canvas node is always new even when its
+				// id repeats — reusing a prior Chart instance here would silently
+				// bind to a detached canvas and draw nothing. Always recreate.
 				if (m7Charts[ticker]) {
-					m7Charts[ticker].data = config.data;
-					m7Charts[ticker].options = config.options;
-					m7Charts[ticker].update();
-				} else {
-					m7Charts[ticker] = new Chart(ctx, config);
+					m7Charts[ticker].destroy();
 				}
+				m7Charts[ticker] = new Chart(ctx, config);
 			});
 		}
 
@@ -1296,7 +1320,7 @@
 			renderTable(snapshot);
 			createOrUpdateChart(snapshot);
 			createOrUpdateTrendChart();
-			renderM7Grid();
+			renderM7Grid(snapshot);
 			renderSourceInfo();
 		}
 
