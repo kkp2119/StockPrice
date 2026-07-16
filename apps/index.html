@@ -1196,12 +1196,27 @@
 			}
 
 			els.m7Grid.innerHTML = tickers.map((ticker) => {
-				const latest = series[ticker][series[ticker].length - 1];
-				const hitLabel = latest.direction_correct ? '<span class="pill">최근일 적중</span>' : '<span class="pill bad">최근일 오답</span>';
+				const points = series[ticker];
+				const latest = points[points.length - 1];
+				const latestPredicted = [...points].reverse().find((p) => p.predicted_close != null);
+
+				let hitLabel;
+				if (latest.predicted_close == null) {
+					hitLabel = '<span class="pill warn">최근일 예측 없음</span>';
+				} else if (latest.direction_correct) {
+					hitLabel = '<span class="pill">최근일 적중</span>';
+				} else {
+					hitLabel = '<span class="pill bad">최근일 오답</span>';
+				}
+
+				const predictedNote = latestPredicted
+					? `${latestPredicted.date === latest.date ? "" : `${latestPredicted.date} 기준 · `}예측 종가 $${latestPredicted.predicted_close.toFixed(2)}`
+					: "예측 데이터 없음";
+
 				return `
 					<div class="m7-card">
 						<h3>${ticker} ${hitLabel}</h3>
-						<p class="m7-sub">최근 종가 $${latest.actual_close.toFixed(2)} · 예측 종가 $${latest.predicted_close.toFixed(2)}</p>
+						<p class="m7-sub">최근 종가 $${latest.actual_close.toFixed(2)} · ${predictedNote}</p>
 						<div class="chart-stage"><canvas id="m7-${ticker}"></canvas></div>
 					</div>
 				`;
