@@ -428,23 +428,23 @@
   },
   "next_day_predictions": {
     "as_of_date": "2026-07-17",
-    "generated_at": "2026-07-20T00:44:36.625976+00:00",
+    "generated_at": "2026-07-20T06:56:08.654056+00:00",
     "cards": [
       {
         "ticker": "AAPL",
         "sector": "Technology",
         "close_used": 333.739990234375,
-        "pred_return_pct": -1.140217423439026,
+        "pred_return_pct": -1.095861792564392,
         "direction": "DOWN",
-        "pred_next_close": 329.9346287167389
+        "pred_next_close": 330.0826611948884
       },
       {
         "ticker": "ABBV",
         "sector": "Health Care",
         "close_used": 254.4900054931641,
-        "pred_return_pct": 0.3921594321727752,
-        "direction": "UP",
-        "pred_next_close": 255.4880120536425
+        "pred_return_pct": -0.3701379597187042,
+        "direction": "DOWN",
+        "pred_next_close": 253.54804137914363
       },
       {
         "ticker": "ADBE",
@@ -458,25 +458,25 @@
         "ticker": "AMAT",
         "sector": "Technology",
         "close_used": 529.6599731445312,
-        "pred_return_pct": 1.4705100059509275,
+        "pred_return_pct": 1.0300724506378174,
         "direction": "UP",
-        "pred_next_close": 537.4486760471386
+        "pred_next_close": 535.1158546099488
       },
       {
         "ticker": "AMD",
         "sector": "Technology",
         "close_used": 495.760009765625,
-        "pred_return_pct": 1.3106377124786377,
+        "pred_return_pct": 1.0243008136749268,
         "direction": "UP",
-        "pred_next_close": 502.25762741700106
+        "pred_next_close": 500.8380835795292
       },
       {
         "ticker": "AMZN",
         "sector": "Consumer Discretionary",
         "close_used": 247.22999572753903,
-        "pred_return_pct": 0.8577594757080078,
+        "pred_return_pct": 0.7620493173599243,
         "direction": "UP",
-        "pred_next_close": 249.3506344426845
+        "pred_next_close": 249.11401022228972
       },
       {
         "ticker": "AVGO",
@@ -522,9 +522,9 @@
         "ticker": "COST",
         "sector": "Consumer Staples",
         "close_used": 940.8699951171876,
-        "pred_return_pct": 0.5949910283088684,
+        "pred_return_pct": 0.6715324521064758,
         "direction": "UP",
-        "pred_next_close": 946.4680871761848
+        "pred_next_close": 947.188242466532
       },
       {
         "ticker": "CRM",
@@ -546,9 +546,9 @@
         "ticker": "CVX",
         "sector": "Energy",
         "close_used": 187.3800048828125,
-        "pred_return_pct": 0.7573957443237305,
+        "pred_return_pct": 0.7107184529304504,
         "direction": "UP",
-        "pred_next_close": 188.79921306550852
+        "pred_next_close": 188.71174915461663
       },
       {
         "ticker": "DIS",
@@ -562,17 +562,17 @@
         "ticker": "GE",
         "sector": "Industrials",
         "close_used": 348.8299865722656,
-        "pred_return_pct": 0.6543739438056946,
+        "pred_return_pct": 1.041725754737854,
         "direction": "UP",
-        "pred_next_close": 351.11263911257544
+        "pred_next_close": 352.4638383826375
       },
       {
         "ticker": "GOOGL",
         "sector": "Communication Services",
         "close_used": 346.7699890136719,
-        "pred_return_pct": 1.1444567441940308,
+        "pred_return_pct": 0.9876028895378112,
         "direction": "UP",
-        "pred_next_close": 350.73862153977973
+        "pred_next_close": 350.19469944522086
       },
       {
         "ticker": "GS",
@@ -594,17 +594,17 @@
         "ticker": "INTC",
         "sector": "Technology",
         "close_used": 95.04000091552734,
-        "pred_return_pct": 1.4007763862609863,
+        "pred_return_pct": 1.4682987928390503,
         "direction": "UP",
-        "pred_next_close": 96.37129880585428
+        "pred_next_close": 96.43547210168424
       },
       {
         "ticker": "JPM",
         "sector": "Financials",
         "close_used": 341.1000061035156,
-        "pred_return_pct": -0.3425246477127075,
+        "pred_return_pct": -0.2876019477844238,
         "direction": "DOWN",
-        "pred_next_close": 339.93165450926153
+        "pred_next_close": 340.1189958420691
       },
       {
         "ticker": "KO",
@@ -618,9 +618,9 @@
         "ticker": "LLY",
         "sector": "Health Care",
         "close_used": 1179.1099853515625,
-        "pred_return_pct": 0.5206152200698853,
+        "pred_return_pct": 0.4880710542201996,
         "direction": "UP",
-        "pred_next_close": 1185.2486113966663
+        "pred_next_close": 1184.8648798874835
       },
       {
         "ticker": "MA",
@@ -642,17 +642,17 @@
         "ticker": "META",
         "sector": "Communication Services",
         "close_used": 646.010009765625,
-        "pred_return_pct": 0.527757465839386,
+        "pred_return_pct": 0.608370304107666,
         "direction": "UP",
-        "pred_next_close": 649.419375822233
+        "pred_next_close": 649.9401428266021
       },
       {
         "ticker": "MRK",
         "sector": "Health Care",
         "close_used": 127.5,
-        "pred_return_pct": 0.376817375421524,
+        "pred_return_pct": 0.3442862629890442,
         "direction": "UP",
-        "pred_next_close": 127.98044215366244
+        "pred_next_close": 127.93896498531102
       },
       {
         "ticker": "MS",
@@ -666,41 +666,41 @@
         "ticker": "MSFT",
         "sector": "Technology",
         "close_used": 393.8200073242188,
-        "pred_return_pct": 1.0539981126785278,
+        "pred_return_pct": 0.5214549899101257,
         "direction": "UP",
-        "pred_next_close": 397.9708627687664
+        "pred_next_close": 395.8736014036753
       },
       {
         "ticker": "NFLX",
         "sector": "Communication Services",
         "close_used": 68.94999694824219,
-        "pred_return_pct": 1.1354715824127195,
+        "pred_return_pct": 1.1294575929641724,
         "direction": "UP",
-        "pred_next_close": 69.73290456966392
+        "pred_next_close": 69.72875792412268
       },
       {
         "ticker": "NKE",
         "sector": "Consumer Discretionary",
         "close_used": 43.7599983215332,
-        "pred_return_pct": 0.3709454238414764,
+        "pred_return_pct": 0.385562390089035,
         "direction": "UP",
-        "pred_next_close": 43.92232403278004
+        "pred_next_close": 43.92872041696463
       },
       {
         "ticker": "NOW",
         "sector": "Technology",
         "close_used": 103.23999786376952,
-        "pred_return_pct": 0.7187036275863647,
+        "pred_return_pct": 1.387193202972412,
         "direction": "UP",
-        "pred_next_close": 103.98198747353652
+        "pred_next_close": 104.6721360968846
       },
       {
         "ticker": "NVDA",
         "sector": "Technology",
         "close_used": 202.80999755859372,
-        "pred_return_pct": 0.5042120218276978,
+        "pred_return_pct": 0.4902485907077789,
         "direction": "UP",
-        "pred_next_close": 203.8325899477526
+        "pred_next_close": 203.80427071343925
       },
       {
         "ticker": "PEP",
@@ -722,17 +722,17 @@
         "ticker": "PG",
         "sector": "Consumer Staples",
         "close_used": 149.97999572753906,
-        "pred_return_pct": -0.5805859565734863,
-        "direction": "DOWN",
-        "pred_next_close": 149.10923293467545
+        "pred_return_pct": 0.5805859565734863,
+        "direction": "UP",
+        "pred_next_close": 150.85075852040268
       },
       {
         "ticker": "PLTR",
         "sector": "Technology",
         "close_used": 132.3800048828125,
-        "pred_return_pct": 1.1094639301300049,
+        "pred_return_pct": 0.7289215922355652,
         "direction": "UP",
-        "pred_next_close": 133.84871328769165
+        "pred_next_close": 133.34495132220582
       },
       {
         "ticker": "QCOM",
@@ -746,9 +746,9 @@
         "ticker": "RTX",
         "sector": "Industrials",
         "close_used": 193.50999450683597,
-        "pred_return_pct": 1.0108861923217771,
+        "pred_return_pct": 0.8703762292861938,
         "direction": "UP",
-        "pred_next_close": 195.46616032206816
+        "pred_next_close": 195.19425950031643
       },
       {
         "ticker": "SHOP",
@@ -778,17 +778,17 @@
         "ticker": "TSLA",
         "sector": "Consumer Discretionary",
         "close_used": 380.8399963378906,
-        "pred_return_pct": 0.9634324312210084,
+        "pred_return_pct": 0.7729676365852356,
         "direction": "UP",
-        "pred_next_close": 384.5091323736708
+        "pred_next_close": 383.7837662567549
       },
       {
         "ticker": "UBER",
         "sector": "Industrials",
         "close_used": 72.45999908447266,
-        "pred_return_pct": 0.8031604290008545,
+        "pred_return_pct": 0.9455035328865052,
         "direction": "UP",
-        "pred_next_close": 73.04196912397353
+        "pred_next_close": 73.14511093574588
       },
       {
         "ticker": "UNH",
@@ -826,9 +826,9 @@
         "ticker": "XOM",
         "sector": "Energy",
         "close_used": 147.36000061035156,
-        "pred_return_pct": 0.8266657590866089,
+        "pred_return_pct": 0.5921250581741333,
         "direction": "UP",
-        "pred_next_close": 148.57817527798716
+        "pred_next_close": 148.232556099691
       }
     ]
   }
